@@ -1,21 +1,19 @@
 <template>
   <div id="app">
     <Navbar />
-    <Body />
+    <router-view></router-view>
     <Footer />
   </div>
 </template>
 
 <script>
 import Navbar from "./components/Navbar";
-import Body from "./components/Body";
 import Footer from "./components/Footer";
 
 export default {
   name: "App",
   components: {
     Navbar,
-    Body,
     Footer
   }
 };

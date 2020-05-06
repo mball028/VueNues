@@ -1,9 +1,10 @@
 <template>
   <div id="main-body">
     <h2>Headlines</h2>
-    <div v-for="(article, index) in articles" :key="index" class="link">
+    <input class="search" type="text" v-model="search" placeholder="Search Headlines" />
+    <div v-for="(article, index) in matchedArticles" :key="index" class="link">
       <a class="headline" :href="article.url" target="_blank">{{article.title}}</a>
-      <p class="source">{{article.source.name}}</p>
+      <p class="source">{{article.source.name.toLowerCase()}}</p>
       <br />
       <br />
       <a :href="article.url" target="_blank">
@@ -27,7 +28,20 @@ export default {
   name: "Newsbody",
   data() {
     return {
-      articles: []
+      articles: [],
+      search: "",
+      sourceList: [
+        "ABC News",
+        "Bleacher Report",
+        "Bloomberg",
+        "CBS News",
+        "CNBC",
+        "CNN",
+        "ESPN",
+        "Fox News",
+        "Time",
+        "USA Today"
+      ], 
     };
   },
   mounted() {
@@ -36,6 +50,16 @@ export default {
         "http://newsapi.org/v2/top-headlines?country=us&apiKey=dd09bb9baa8843d8b2e9bd4705399f79"
       )
       .then(res => (this.articles = res.data.articles));
+  },
+  computed: {
+    matchedArticles: function() {
+      return this.articles.filter(article => {
+        return (
+          article.title.toLowerCase().match(this.search.toLowerCase()) ||
+          article.description.toLowerCase().match(this.search.toLowerCase())
+        );
+      });
+    }
   }
 };
 </script>
@@ -75,5 +99,15 @@ h2 {
   padding: 15px;
   margin-bottom: 30px;
   box-shadow: 10px 10px #42b8839f;
+}
+.search {
+  width: 60%;
+  margin-bottom: 35px;
+  border: none;
+  border-bottom: solid 4px #42b883;
+  padding: 5px;
+}
+.search:focus {
+  background-color: #42b88338;
 }
 </style>
