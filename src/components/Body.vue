@@ -1,17 +1,15 @@
 <template>
   <div id="main-body">
-    <h2>Headlines</h2>
+    <h2>Top US Headlines</h2>
     <input class="search" type="text" v-model="search" placeholder="Search Headlines" />
     <h5>Sources</h5>
-    <div class="source-list">
-      <button
-        v-for="(source, i) in sourceList"
-        :key="i"
-        @click="sourceFilter = source; active = i;"
-        :class="{active: source == sourceFilter}"
-        class="source"
-      >{{ source }}</button>
-    </div>
+    <button
+      v-for="(source, i) in sourceList"
+      :key="i"
+      @click="sourceFilter = source; active = i;"
+      :class="{active: source == sourceFilter}"
+      class="source"
+    >{{ source }}</button>
     <div v-for="article in filteredArticles" :key="article.url" class="article">
       <a class="headline" :href="article.url" target="_blank">{{article.title}}</a>
       <p class="source">{{article.source.name.toLowerCase()}}</p>
@@ -36,29 +34,11 @@ import axios from "axios";
 
 export default {
   name: "Newsbody",
-  methods: {},
   data() {
     return {
       articles: [],
       search: "",
-      sourceList: [
-        "All",
-        "ABC News",
-        "Associated Press",
-        "BBC News",
-        "Bleacher Report",
-        "Bloomberg",
-        "Business Insider",
-        "Buzzfeed",
-        "CBC News",
-        "CBS News",
-        "CNBC",
-        "CNN",
-        "ESPN",
-        "Fox News",
-        "Time",
-        "USA Today"
-      ],
+      sourceList: ["All"],
       sourceFilter: "All"
     };
   },
@@ -67,7 +47,14 @@ export default {
       .get(
         "http://newsapi.org/v2/top-headlines?country=us&apiKey=dd09bb9baa8843d8b2e9bd4705399f79"
       )
-      .then(res => (this.articles = res.data.articles));
+      .then(res => {
+        res.data.articles.forEach(article =>
+          (this.sourceList.includes(article.source.name))
+          ? this.sourceList
+          : this.sourceList.push(article.source.name)
+        );
+        return (this.articles = res.data.articles);
+      });
   },
   computed: {
     matchedArticles: function() {
