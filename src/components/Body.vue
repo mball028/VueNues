@@ -1,7 +1,17 @@
 <template>
   <div id="main-body">
-    <h2>Top US Headlines</h2>
+    <h2>{{ title }}</h2>
     <input class="search" type="text" v-model="search" placeholder="Search Headlines" />
+    <br />
+    <br />
+    <input
+      type="text"
+      class="topic-search"
+      v-model="topic"
+      placeholder="Search articles by topic"
+      @keyup.enter="topicFinder()"
+    />
+    <button @click="topicFinder()">Look Up Articles</button>
     <h5>Sources</h5>
     <button
       v-for="(source, i) in sourceList"
@@ -36,13 +46,31 @@ export default {
   name: "Newsbody",
   data() {
     return {
+      title: "",
       articles: [],
       search: "",
       sourceList: ["All"],
-      sourceFilter: ["All"]
+      sourceFilter: ["All"],
+      topic: ""
     };
   },
   methods: {
+    initialLoad() {
+      this.sourceList = ["All"];
+      axios
+        .get(
+          "http://newsapi.org/v2/top-headlines?country=us&apiKey=dd09bb9baa8843d8b2e9bd4705399f79"
+        )
+        .then(res => {
+          res.data.articles.forEach(article =>
+            this.sourceList.includes(article.source.name)
+              ? this.sourceList
+              : this.sourceList.push(article.source.name)
+          );
+          return (this.articles = res.data.articles);
+        });
+      this.title = `Top US Headlines`;
+    },
     filterSources(src) {
       const allIndex = this.sourceFilter.indexOf("All");
       if (src != "All" && this.sourceFilter.includes(src) === false) {
@@ -58,22 +86,32 @@ export default {
       } else {
         this.sourceFilter = ["All"];
       }
-      console.log(this.sourceFilter);
+    },
+    topicFinder() {
+      if (this.topic.length > 0) {
+        axios
+          .get(
+            `https://newsapi.org/v2/everything?q=${this.topic}&apiKey=dd09bb9baa8843d8b2e9bd4705399f79`
+          )
+          .then(res => {
+            this.sourceList = ["All"];
+            res.data.articles.forEach(article => {
+              this.sourceList.includes(article.source.name)
+                ? this.sourceList
+                : this.sourceList.push(article.source.name);
+            });
+            return (this.articles = res.data.articles);
+          });
+        this.title = `${this.topic.charAt(0).toUpperCase() +
+          this.topic.slice(1)} Articles`;
+      } else {
+        alert("Please insert a topic.");
+        this.initialLoad();
+      }
     }
   },
   mounted() {
-    axios
-      .get(
-        "http://newsapi.org/v2/top-headlines?country=us&apiKey=dd09bb9baa8843d8b2e9bd4705399f79"
-      )
-      .then(res => {
-        res.data.articles.forEach(article =>
-          this.sourceList.includes(article.source.name)
-            ? this.sourceList
-            : this.sourceList.push(article.source.name)
-        );
-        return (this.articles = res.data.articles);
-      });
+    this.initialLoad();
   },
   computed: {
     matchedArticles: function() {
@@ -96,7 +134,7 @@ export default {
 
 <style scoped>
 button.source {
-  background-color: #42b88375;
+  background-color: #42b8833f;
   border: none;
   border-radius: 15px;
   margin: 5px;
@@ -150,6 +188,6 @@ h2 {
   padding: 5px;
 }
 .search:focus {
-  background-color: #42b88338;
+  background-color: #42b8833f;
 }
 </style>
