@@ -6,10 +6,10 @@
     <button
       v-for="(source, i) in sourceList"
       :key="i"
-      @click="sourceFilter = source; active = i;"
-      :class="{active: source == sourceFilter}"
+      @click="filterSources(source); active = i; filterSources"
+      :class="{active: sourceFilter.includes(source)}"
       class="source"
-    >{{ source }}</button>
+    >{{ source.toLowerCase() }}</button>
     <div v-for="article in filteredArticles" :key="article.url" class="article">
       <a class="headline" :href="article.url" target="_blank">{{article.title}}</a>
       <p class="source">{{article.source.name.toLowerCase()}}</p>
@@ -39,8 +39,27 @@ export default {
       articles: [],
       search: "",
       sourceList: ["All"],
-      sourceFilter: "All"
+      sourceFilter: ["All"]
     };
+  },
+  methods: {
+    filterSources(src) {
+      const allIndex = this.sourceFilter.indexOf("All");
+      if (src != "All" && this.sourceFilter.includes(src) === false) {
+        if (allIndex > -1) {
+          this.sourceFilter.splice(allIndex, 1);
+        }
+        this.sourceFilter.push(src);
+      } else if (this.sourceFilter.includes(src)) {
+        this.sourceFilter.splice(this.sourceFilter.indexOf(src), 1);
+        if (this.sourceFilter.length === 0) {
+          this.sourceFilter = ["All"];
+        }
+      } else {
+        this.sourceFilter = ["All"];
+      }
+      console.log(this.sourceFilter);
+    }
   },
   mounted() {
     axios
@@ -67,7 +86,7 @@ export default {
         if (this.sourceFilter == "All") {
           return article;
         } else {
-          return article.source.name.match(this.sourceFilter);
+          return this.sourceFilter.includes(article.source.name);
         }
       });
     }
