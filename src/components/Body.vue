@@ -3,27 +3,30 @@
     <h2>Headlines</h2>
     <input class="search" type="text" v-model="search" placeholder="Search Headlines" />
     <h5>Sources</h5>
-    <button
-      v-for="(source, i) in sourceList"
-      :key="i"
-      @click="sourceFilter = source; active = i;"
-      :class="{active: source == sourceFilter}"
-    >{{ source }}</button>
-    <div v-for="article in matchedArticles" :key="article.url" class="article">
-        <a class="headline" :href="article.url" target="_blank">{{article.title}}</a>
-        <p class="source">{{article.source.name.toLowerCase()}}</p>
-        <br />
-        <br />
-        <a :href="article.url" target="_blank">
-          <img
-            v-if="article.urlToImage"
-            :src="article.urlToImage"
-            alt="article-image"
-            class="article-pic"
-          />
-        </a>
-        <p>{{article.description}}</p>
-        <p class="author" v-if="article.author">written by {{article.author}}</p>
+    <div class="source-list">
+      <button
+        v-for="(source, i) in sourceList"
+        :key="i"
+        @click="sourceFilter = source; active = i;"
+        :class="{active: source == sourceFilter}"
+        class="source"
+      >{{ source }}</button>
+    </div>
+    <div v-for="article in filteredArticles" :key="article.url" class="article">
+      <a class="headline" :href="article.url" target="_blank">{{article.title}}</a>
+      <p class="source">{{article.source.name.toLowerCase()}}</p>
+      <br />
+      <br />
+      <a :href="article.url" target="_blank">
+        <img
+          v-if="article.urlToImage"
+          :src="article.urlToImage"
+          alt="article-image"
+          class="article-pic"
+        />
+      </a>
+      <p>{{article.description}}</p>
+      <p class="author" v-if="article.author">written by {{article.author}}</p>
     </div>
   </div>
 </template>
@@ -33,8 +36,7 @@ import axios from "axios";
 
 export default {
   name: "Newsbody",
-  methods: {
-  },
+  methods: {},
   data() {
     return {
       articles: [],
@@ -42,8 +44,13 @@ export default {
       sourceList: [
         "All",
         "ABC News",
+        "Associated Press",
+        "BBC News",
         "Bleacher Report",
         "Bloomberg",
+        "Business Insider",
+        "Buzzfeed",
+        "CBC News",
         "CBS News",
         "CNBC",
         "CNN",
@@ -70,14 +77,33 @@ export default {
           article.description.toLowerCase().match(this.search.toLowerCase())
         );
       });
+    },
+    filteredArticles: function() {
+      return this.matchedArticles.filter(article => {
+        if (this.sourceFilter == "All") {
+          return article;
+        } else {
+          return article.source.name.match(this.sourceFilter);
+        }
+      });
     }
   }
 };
 </script>
 
 <style scoped>
-button.active {
+button.source {
+  background-color: #42b88375;
+  border: none;
+  border-radius: 15px;
+  margin: 5px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+button.active,
+button:hover {
   background-color: #42b883;
+  color: white;
 }
 h2 {
   color: #35495e;
@@ -111,7 +137,7 @@ h2 {
 }
 .article {
   padding: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
   box-shadow: 10px 10px #42b8839f;
 }
 .search {
