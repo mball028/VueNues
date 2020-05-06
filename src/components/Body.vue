@@ -2,21 +2,28 @@
   <div id="main-body">
     <h2>Headlines</h2>
     <input class="search" type="text" v-model="search" placeholder="Search Headlines" />
-    <div v-for="(article, index) in matchedArticles" :key="index" class="link">
-      <a class="headline" :href="article.url" target="_blank">{{article.title}}</a>
-      <p class="source">{{article.source.name.toLowerCase()}}</p>
-      <br />
-      <br />
-      <a :href="article.url" target="_blank">
-        <img
-          v-if="article.urlToImage"
-          :src="article.urlToImage"
-          alt="article-image"
-          class="article-pic"
-        />
-      </a>
-      <p>{{article.description}}</p>
-      <p class="author" v-if="article.author">written by {{article.author}}</p>
+    <h5>Sources</h5>
+    <button
+      v-for="(source, i) in sourceList"
+      :key="i"
+      @click="sourceFilter = source; active = i;"
+      :class="{active: source == sourceFilter}"
+    >{{ source }}</button>
+    <div v-for="article in matchedArticles" :key="article.url" class="article">
+        <a class="headline" :href="article.url" target="_blank">{{article.title}}</a>
+        <p class="source">{{article.source.name.toLowerCase()}}</p>
+        <br />
+        <br />
+        <a :href="article.url" target="_blank">
+          <img
+            v-if="article.urlToImage"
+            :src="article.urlToImage"
+            alt="article-image"
+            class="article-pic"
+          />
+        </a>
+        <p>{{article.description}}</p>
+        <p class="author" v-if="article.author">written by {{article.author}}</p>
     </div>
   </div>
 </template>
@@ -26,11 +33,14 @@ import axios from "axios";
 
 export default {
   name: "Newsbody",
+  methods: {
+  },
   data() {
     return {
       articles: [],
       search: "",
       sourceList: [
+        "All",
         "ABC News",
         "Bleacher Report",
         "Bloomberg",
@@ -41,7 +51,8 @@ export default {
         "Fox News",
         "Time",
         "USA Today"
-      ], 
+      ],
+      sourceFilter: "All"
     };
   },
   mounted() {
@@ -65,6 +76,9 @@ export default {
 </script>
 
 <style scoped>
+button.active {
+  background-color: #42b883;
+}
 h2 {
   color: #35495e;
 }
@@ -95,14 +109,13 @@ h2 {
   border: solid #42b883 3px;
   padding: 3px;
 }
-.link {
+.article {
   padding: 15px;
   margin-bottom: 30px;
   box-shadow: 10px 10px #42b8839f;
 }
 .search {
   width: 60%;
-  margin-bottom: 35px;
   border: none;
   border-bottom: solid 4px #42b883;
   padding: 5px;
