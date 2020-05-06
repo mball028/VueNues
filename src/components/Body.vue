@@ -1,17 +1,17 @@
 <template>
   <div id="main-body">
     <h2>{{ title }}</h2>
-    <input class="search" type="text" v-model="search" placeholder="Search Headlines" />
+    <input class="search" type="text" v-model="search" placeholder="Search Articles" />
     <br />
     <br />
     <input
       type="text"
       class="topic-search"
       v-model="topic"
-      placeholder="Search articles by topic"
+      placeholder="Find articles by topic"
       @keyup.enter="topicFinder()"
     />
-    <button @click="topicFinder()">Look Up Articles</button>
+    <button @click="topicFinder()" class="topic-btn">Look Up Articles</button>
     <h5>Sources</h5>
     <button
       v-for="(source, i) in sourceList"
@@ -116,7 +116,14 @@ export default {
   computed: {
     matchedArticles: function() {
       return this.articles.filter(article => {
-        return article.title.toLowerCase().match(this.search.toLowerCase());
+        if (article.description) {
+          return (
+            article.title.toLowerCase().match(this.search.toLowerCase()) ||
+            article.description.toLowerCase().match(this.search.toLowerCase())
+          );
+        }
+        return (
+          article.title.toLowerCase().match(this.search.toLowerCase())        );
       });
     },
     filteredArticles: function() {
