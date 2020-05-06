@@ -49,9 +49,9 @@ export default {
       )
       .then(res => {
         res.data.articles.forEach(article =>
-          (this.sourceList.includes(article.source.name))
-          ? this.sourceList
-          : this.sourceList.push(article.source.name)
+          this.sourceList.includes(article.source.name)
+            ? this.sourceList
+            : this.sourceList.push(article.source.name)
         );
         return (this.articles = res.data.articles);
       });
@@ -59,10 +59,7 @@ export default {
   computed: {
     matchedArticles: function() {
       return this.articles.filter(article => {
-        return (
-          article.title.toLowerCase().match(this.search.toLowerCase()) ||
-          article.description.toLowerCase().match(this.search.toLowerCase())
-        );
+        return article.title.toLowerCase().match(this.search.toLowerCase());
       });
     },
     filteredArticles: function() {
