@@ -59,7 +59,9 @@ export default {
       this.sourceList = ["All"];
       axios
         .get(
-          "http://newsapi.org/v2/top-headlines?country=us&apiKey=dd09bb9baa8843d8b2e9bd4705399f79"
+          "http://newsapi.org/v2/top-headlines?" +
+            "country=us&" +
+            "apiKey=dd09bb9baa8843d8b2e9bd4705399f79"
         )
         .then(res => {
           res.data.articles.forEach(article =>
@@ -122,8 +124,7 @@ export default {
             article.description.toLowerCase().match(this.search.toLowerCase())
           );
         }
-        return (
-          article.title.toLowerCase().match(this.search.toLowerCase())        );
+        return article.title.toLowerCase().match(this.search.toLowerCase());
       });
     },
     filteredArticles: function() {
